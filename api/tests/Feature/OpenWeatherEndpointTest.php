@@ -24,7 +24,6 @@ class OpenWeatherEndpointTest extends TestCase
     public function test_open_weather_forcast_hourly()
     {
         $response = Http::openWeather()->get('/forecast', ['lat' => $this->faker->latitude, 'lon' => $this->faker->longitude, 'units' => 'metric']);
-        dump($response->json());
         $this->assertTrue($response->ok() == true);
     }
 }

@@ -30,7 +30,7 @@ class CrawlWeatherDataJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $users = User::take(3)->get();
+        $users = User::all();
 
         $currentWeatherResponses = Http::retry(3)->pool(function (Pool $pool) use ($users) {
             return  $users->map(fn ($user) => $pool->as($user->id)->get('https://api.openweathermap.org/data/2.5/weather', ['lat' => $user->latitude, 'lon' => $user->longitude, 'units' => 'metric', 'appid' => env("OPEN_WEATHER_API_KEY")]));
@@ -42,12 +42,22 @@ class CrawlWeatherDataJob implements ShouldQueue
 
         $users->each(function ($user) use ($currentWeatherResponses, $forecastWeatherResponses) {
             if ($currentWeatherResponses[$user->id]->ok()) {
-                Cache::put("CURRENT_WEATHER_USER_$user->id", $currentWeatherResponses[$user->id]->json(), now()->addHour());
+                Cache::put("CURRENT_WEATHER_USER_$user->id", CrawlWeatherDataJob::parseCurrentWeather($currentWeatherResponses[$user->id]), now()->addHour());
             }
 
             if ($forecastWeatherResponses[$user->id]->ok()) {
-                Cache::put("FORECAST_WEATHER_USER_$user->id", $forecastWeatherResponses[$user->id]->json(), now()->addHour());
+                Cache::put("FORECAST_WEATHER_USER_$user->id", $forecastWeatherResponses[$user->id]['list'], now()->addHour());
             }
         });
+    }
+
+    public static function parseCurrentWeather($response)
+    {
+        return [
+            'weather_status'     => $response['weather'],
+            'temp_status'        => $response['main'],
+            'wind_status'        => $response['wind'],
+            'sys'                => $response['sys']
+        ];
     }
 }

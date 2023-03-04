@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserCurrentWeatherController;
+use App\Http\Controllers\UserForecastWeatherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return response()->json([
-        'message' => 'all systems are a go',
-        'users' => \App\Models\User::all(),
-    ]);
-});
+Route::get('/', fn() => "Welcom to the jungle");
+
+Route::get('/current-weather', [UserCurrentWeatherController::class, 'index']);
+Route::get('/current-weather/{user}', [UserCurrentWeatherController::class, 'show']);
+Route::get('/forecast-weather/{user}', UserForecastWeatherController::class);
