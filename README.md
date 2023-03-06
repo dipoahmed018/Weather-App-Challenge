@@ -13,7 +13,7 @@
   - Setup app key: `php artisan key:generate`
   - Migrate database: `php artisan migrate` 
   - Seed database: `php artisan db:seed`
-  - Craw and cach weather info: `php artisan crawl:weather` This is optional but it will help to reduce the inital request
+  - Craw and cach weather info: `php artisan crawl:weather` This is optional but it will help to reduce the inital request time
   - Run tests: `php artisan test`
   - Craw and cach weather info every 1 hour: `php artisan schedule:work`
 - Visit api: `http://localhost`
